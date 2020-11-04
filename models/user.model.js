@@ -1,7 +1,11 @@
 const mongoose = require('mongoose');
 
 let userSchema = new mongoose.Schema({
+    MOBILE_NUMBER : {
+    type : String,
+    required : true,
 
+    },
     Email : {
         type : String ,
         required : true

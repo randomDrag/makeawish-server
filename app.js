@@ -32,6 +32,9 @@ mongoose.connect(DB_URL,{
     console.info(`DB is connected`);
 });
 
+mongoose.set('useNewUrlParser', true);
+mongoose.set('useFindAndModify', false);
+mongoose.set('useCreateIndex', true);
 
 app.use(express.json());
 
