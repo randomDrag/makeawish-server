@@ -48,30 +48,12 @@ route.post("/verify", async (req, res) => {
                     msg: "ERROR"
                 });
 
-                // await client.verify.services.create({
-                //     friendlyName: 'MAKE A WISH',
-                //     codeLength: 6
-                // }).then(service =>
-                //     client.verify.services(service.sid).verifications.create({
-                //         to: PhoneNumber,
-                //         channel: 'sms'
-                //     })
-                //     .then((verification) => {
-
-                //         sid = verification.serviceSid;
-
-                //         res.status(200).json({msg :"OK",
-                //                                 sid  : sid});
-                //     })
-
-
-                // );
-
 
             } else {
 
-                if (doc === null || doc === '') {
-
+               
+                if ((doc === null) ) {
+                   
                     bcrypt.hash(req.body.Password, saltRounds, (err, hash) => {
 
                         Password = hash;
@@ -89,8 +71,7 @@ route.post("/verify", async (req, res) => {
                                 sid = verification.serviceSid;
 
                                 res.status(200).json({
-                                    msg: "OK",
-                                    sid: sid
+                                    msg: true
                                 });
                             })
 
@@ -104,8 +85,9 @@ route.post("/verify", async (req, res) => {
 
 
                 }else{
+                    console.log("hello");
                     res.status(200).json({
-                        msg: "Account already exist "
+                        msg: false
                     });
                 }
 

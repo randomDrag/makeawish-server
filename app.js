@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 //route
 
@@ -38,7 +39,10 @@ mongoose.set('useCreateIndex', true);
 
 app.use(express.json());
 
-
+app.use(cors({
+    origin: SITE,
+    optionsSuccessStatus:202,
+}))
 
 
 
