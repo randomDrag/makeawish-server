@@ -1,4 +1,5 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 
 require('dotenv').config();
 
@@ -6,6 +7,7 @@ const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
+const saltRounds = 10;
 
 let userEmail = require("../models/user.model");
 
@@ -25,15 +27,6 @@ express.urlencoded({
     extended: true
 });
 
-route.get("/", (req, res) => {
-
-    res.status(200).json({
-        msg: "OK"
-    });
-
-
-
-});
 
 
 route.post("/verify", async (req, res) => {
@@ -42,26 +35,85 @@ route.post("/verify", async (req, res) => {
 
         PhoneNumber = "+91" + req.body.number;
         Email = req.body.Email;
-        Password = req.body.Password;
+       
 
-        await client.verify.services.create({
-            friendlyName: 'MAKE A WISH',
-            codeLength: 6
-        }).then(service =>
-            client.verify.services(service.sid).verifications.create({
-                to: PhoneNumber,
-                channel: 'sms'
-            })
-            .then((verification) => {
+      await  userEmail.findOne({
+            "MOBILE_NUMBER": PhoneNumber
+        }, (err, doc) => {
 
-                sid = verification.serviceSid;
-                    
-                res.status(200).json({msg :"OK",
-                                        sid  : sid});
-            })
+            if (err) {
 
 
-        );
+                res.status(400).json({
+                    msg: "ERROR"
+                });
+
+                // await client.verify.services.create({
+                //     friendlyName: 'MAKE A WISH',
+                //     codeLength: 6
+                // }).then(service =>
+                //     client.verify.services(service.sid).verifications.create({
+                //         to: PhoneNumber,
+                //         channel: 'sms'
+                //     })
+                //     .then((verification) => {
+
+                //         sid = verification.serviceSid;
+
+                //         res.status(200).json({msg :"OK",
+                //                                 sid  : sid});
+                //     })
+
+
+                // );
+
+
+            } else {
+
+                if (doc === null || doc === '') {
+
+                    bcrypt.hash(req.body.Password, saltRounds, (err, hash) => {
+
+                        Password = hash;
+
+                       client.verify.services.create({
+                            friendlyName: 'MAKE A WISH',
+                            codeLength: 6
+                        }).then(service =>
+                            client.verify.services(service.sid).verifications.create({
+                                to: PhoneNumber,
+                                channel: 'sms'
+                            })
+                            .then((verification) => {
+
+                                sid = verification.serviceSid;
+
+                                res.status(200).json({
+                                    msg: "OK",
+                                    sid: sid
+                                });
+                            })
+
+
+                        );
+
+
+
+                    });
+
+
+
+                }else{
+                    res.status(200).json({
+                        msg: "Account already exist "
+                    });
+                }
+
+            }
+
+        });
+
+
 
 
 
@@ -91,12 +143,12 @@ route.post("/verify", async (req, res) => {
 
 route.post("/register", async (req, res) => {
     console.log(Email);
-   let pin =req.body.code;
+    let pin = req.body.code;
     try {
-      await  client.verify.services(sid)
+        await client.verify.services(sid)
             .verificationChecks
             .create({
-                to : PhoneNumber,
+                to: PhoneNumber,
                 code: pin
             })
             .then(verification_check => {
@@ -128,7 +180,7 @@ route.post("/register", async (req, res) => {
 
                     });
                 }
-            }).catch((e)=>{
+            }).catch((e) => {
                 console.log(e);
             })
     } catch (e) {
