@@ -8,14 +8,22 @@ let userSchema = new mongoose.Schema({
     },
     Email : {
         type : String ,
-        required : true
+        required : true,
+        unique:true
     },
     Password : {
 
         type : String ,
         required : true
 
-    },
+    },welcomePage: {
+        type :Boolean,
+        default : true
+    },userInfo : {
+        type : mongoose.Schema.Types.ObjectId ,
+        ref : 'UserInfo'
+      
+    }
     
 
 });

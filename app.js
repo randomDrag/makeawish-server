@@ -1,10 +1,13 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require ('cookie-parser');
 
 //route
 
 const userRoute = require('./routes/users');
+
+const userlogin = require('./routes/user.login');
 
 
 
@@ -42,17 +45,19 @@ app.use(express.json());
 app.use(cors({
     origin: SITE,
     optionsSuccessStatus:202,
-}))
+}));
+
+app.use(cookieParser());
 
 
 
 
 
-
-
+//route like middelware 
 
 app.use("/users",userRoute);
 
+app.use("/loginuser",userlogin);
 
 
 app.listen(PORT,()=>{

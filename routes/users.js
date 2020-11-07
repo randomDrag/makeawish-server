@@ -11,6 +11,8 @@ const saltRounds = 10;
 
 let userEmail = require("../models/user.model");
 
+let Info = require("../models/userInfo.model");
+
 
 //some vars
 
@@ -85,7 +87,7 @@ route.post("/verify", async (req, res) => {
 
 
                 }else{
-                    console.log("hello");
+               
                     res.status(200).json({
                         msg: false
                     });
@@ -135,14 +137,19 @@ route.post("/register", async (req, res) => {
             })
             .then(verification_check => {
 
+              
+
+              
                 if (verification_check.valid) {
+                  
                     let user = new userEmail({
                         Email: Email,
                         Password: Password,
-                        MOBILE_NUMBER: PhoneNumber
+                        MOBILE_NUMBER: PhoneNumber,
+                        userInfo : new Info()._id
                     });
 
-                    console.log(req.body);
+             
                     user.save((err, doc) => {
 
                         if (err) {
@@ -151,6 +158,7 @@ route.post("/register", async (req, res) => {
                                 e: err.message
                             });
                         } else {
+
 
                             res.status(200).json({
                                 msg: "OK",
