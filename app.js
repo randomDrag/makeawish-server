@@ -9,6 +9,7 @@ const userRoute = require('./routes/users');
 
 const userlogin = require('./routes/user.login');
 
+const userInfo = require('./routes/user.wish');
 
 
 
@@ -58,6 +59,8 @@ app.use(cookieParser());
 app.use("/users",userRoute);
 
 app.use("/loginuser",userlogin);
+
+app.use("/userinfo",userInfo);
 
 
 app.listen(PORT,()=>{
