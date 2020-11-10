@@ -35,7 +35,8 @@ route.post("/verify", async (req, res) => {
 
     try {
 
-        PhoneNumber = "+91" + req.body.number;
+        PhoneNumber = req.body.CountryCode+ req.body.number;
+        console.log(PhoneNumber);
         Email = req.body.Email;
        
 
