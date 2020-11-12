@@ -23,7 +23,8 @@ function Jwtauth( req , res, next){
     
 
     }catch(e){
- return res.status(500).json({msg : e.message});
+ return res.status(200).json({msg : false,
+                            err : e.message});
     }
 
 }

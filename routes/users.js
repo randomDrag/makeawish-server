@@ -127,7 +127,7 @@ route.post("/verify", async (req, res) => {
 
 
 route.post("/register", async (req, res) => {
-    console.log(Email);
+    
     let pin = req.body.code;
     try {
         await client.verify.services(sid)
@@ -155,15 +155,14 @@ route.post("/register", async (req, res) => {
 
                         if (err) {
                             res.status(401).json({
-                                msg: "server error",
+                                msg: false,
                                 e: err.message
                             });
                         } else {
 
 
                             res.status(200).json({
-                                msg: "OK",
-                                data: doc
+                                msg: true
                             });
 
 
@@ -176,7 +175,7 @@ route.post("/register", async (req, res) => {
             })
     } catch (e) {
         res.status(401).json({
-            msg: "server error",
+            msg: false,
             err: e.message
         });
 
@@ -187,6 +186,109 @@ route.post("/register", async (req, res) => {
 
 });
 
+let Fpassword ="";
+
+let Fphonenumber ="";
+
+route.post('/forgetpasswordverify',async (req,res)=>{
+
+    
+
+        Fphonenumber =  req.body.CountryCode+ req.body.number;
+
+    await userEmail.findOne({MOBILE_NUMBER : Fphonenumber},(err,doc)=>{
+
+        if(!err){
+
+ 
+            if ((doc !== null ) ) {
+                console.log(doc);
+                   
+                bcrypt.hash(req.body.Password, saltRounds, (err, hash) => {
+
+                    Fpassword = hash;
+
+                   client.verify.services.create({
+                        friendlyName: 'M-A-W password reset',
+                        codeLength: 6
+                    }).then(service =>
+                        client.verify.services(service.sid).verifications.create({
+                            to: Fphonenumber,
+                            channel: 'sms'
+                        })
+                        .then((verification) => {
+
+                            sid = verification.serviceSid;
+
+                            res.status(200).json({
+                                msg: true
+                            });
+                        })
+
+
+                    );
+
+
+
+                });
+            }
+
+
+        }
+    })
+
+
+
+
+
+});
+
+
+route.post("/forgetpasswordotp", async (req,res)=>{
+    let pin = req.body.code;
+
+    try {
+        await client.verify.services(sid)
+            .verificationChecks
+            .create({
+                to: Fphonenumber,
+                code: pin
+            })
+            .then(verification_check => {
+
+              
+
+              
+                if (verification_check.valid) {
+                  
+                 userEmail.findOneAndUpdate({MOBILE_NUMBER : Fphonenumber},{"Password" : Fpassword},(err ,doc)=>{
+
+                    if(!err){
+
+                        res.status(200).json({msg : true});
+
+                    }
+             
+             
+             
+                });
+             
+                }else{
+                    res.status(200).json({msg : false});  
+                }
+            }).catch((e) => {
+                console.log(e);
+            })
+    } catch (e) {
+        res.status(401).json({
+            msg: false,
+            err: e.message
+        });
+
+    }
+
+
+});
 
 
 module.exports = route;

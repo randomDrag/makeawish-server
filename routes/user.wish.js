@@ -160,6 +160,7 @@ route.post("/add/wish", jwtauth, async (req, res) => {
 
 route.get("/remove/:id", jwtauth, async (req, res) => {
 
+    try {
     let uid = req.params.id;
 
     await user.findById({
@@ -176,13 +177,36 @@ route.get("/remove/:id", jwtauth, async (req, res) => {
                 }
             }).exec((err, docs) => {
 
-                console.log(err, docs);
+              if(!err){
+                  res.status(200).json({msg : true});
+              }
             })
         }
     })
+    }catch (e){
 
+        res.status(200).json({msg : false});
+    }
 
-})
+});
+
+route.get("/numberofall",(req,res)=>{
+
+    try{
+    user.countDocuments((err,count)=>{
+        if(!err){
+          
+            res.status(200).json({msg: true,
+                                    doc : count});
+        }
+    });
+
+}catch(e){
+
+    res.status(200).json({msg: false});
+}
+
+});
 
 
 module.exports = route;
