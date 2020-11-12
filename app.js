@@ -11,6 +11,8 @@ const userlogin = require('./routes/user.login');
 
 const userInfo = require('./routes/user.wish');
 
+const Admin = require('./routes/admin');
+
 
 
 const app = express();
@@ -61,6 +63,8 @@ app.use("/users",userRoute);
 app.use("/loginuser",userlogin);
 
 app.use("/userinfo",userInfo);
+
+app.use("/admin",Admin);
 
 
 app.listen(PORT,()=>{
