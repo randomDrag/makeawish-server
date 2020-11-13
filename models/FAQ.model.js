@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 let FAQSchema = mongoose.Schema({
 
-   QUSTION : {
+   QUESTION : {
         type : String ,
         
       

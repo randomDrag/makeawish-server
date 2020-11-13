@@ -78,14 +78,14 @@ route.post('/create',memberjwtauth, async (req,res)=>{
 
 route.get("/del/:id",memberjwtauth,(req,res)=>{
 
-    user.findOne({_id : req.member},(err,docs)=>{
+    member.findOne({_id : req.member},(err,docs)=>{
 
         if(!err){
 
             if(docs.writeable){
                 try{
 
-                    memberModel.findByIdAndDelete({_id : req.params.id},(err,doc)=>{
+                   FAQ.findByIdAndDelete({_id : req.params.id},(err,doc)=>{
             
                         if(!err){
             

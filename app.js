@@ -15,6 +15,8 @@ const Admin = require('./routes/admin');
 
 const Amember = require('./routes/adminMember');
 
+const FAQ = require('./routes/FAQ');
+
 
 
 const app = express();
@@ -72,6 +74,8 @@ app.use("/userinfo",userInfo);
 app.use("/admin",Admin);
 
 app.use("/member",Amember);
+
+app.use("/FAQ",FAQ);
 
 
 app.listen(PORT,()=>{
