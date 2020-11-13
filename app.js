@@ -13,6 +13,8 @@ const userInfo = require('./routes/user.wish');
 
 const Admin = require('./routes/admin');
 
+const Amember = require('./routes/adminMember');
+
 
 
 const app = express();
@@ -48,6 +50,9 @@ app.use(express.json());
 app.use(cors({
     origin: SITE,
     optionsSuccessStatus:202,
+    credentials : true,
+    maxAge : 1800,
+    allowedHeaders : HEADER,
 }));
 
 app.use(cookieParser());
@@ -65,6 +70,8 @@ app.use("/loginuser",userlogin);
 app.use("/userinfo",userInfo);
 
 app.use("/admin",Admin);
+
+app.use("/member",Amember);
 
 
 app.listen(PORT,()=>{

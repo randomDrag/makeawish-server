@@ -3,10 +3,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 let route = express.Router();
 
-let user = require("../models/admin.user");
+let user = require("../models/admin.member.model");
+let userdet = require("../models/user.model");
 const adminjwtauth = require('../middleware/adminjwt');
-
-let memberModel = require("../models/admin.member.model");
+const memberjwtauth = require('../middleware/memberjwt');
 
 
 
@@ -14,7 +14,7 @@ const saltRounds = 10;
 
 
 
-route.post("/adminregister", async (req, res) => {
+route.post("/AMregister", adminjwtauth, async (req, res) => {
 
 let {Email , Password} = req.body;
 
@@ -93,8 +93,8 @@ route.post("/login",  async function(req ,res){
                        const c1 = t[0] + "." + t[1];
                        const c2 = t[2];
                 
-                       res.cookie("A_0",c1,{httpOnly : true ,sameSite:"none" , secure : true});
-                       res.cookie("A_1",c2,{httpOnly : true ,sameSite:"none" , secure : true});
+                       res.cookie("M_0",c1,{httpOnly : true ,sameSite:"none" , secure : true});
+                       res.cookie("M_1",c2,{httpOnly : true ,sameSite:"none" , secure : true});
                  
                     res.status(200).json({msg : true});
                                          
@@ -120,12 +120,12 @@ route.post("/login",  async function(req ,res){
 });
 
 
-route.get("/logout", function(req, res){
+route.get("/logout",memberjwtauth, function(req, res){
 
     try{
-        res.cookie("A_0","0",{httpOnly : true ,sameSite:"none" , secure : true});
-        res.cookie("A_1","0",{httpOnly: true ,sameSite:"none" , secure : true});
-  res.clearCookie("A_0").clearCookie("A_1");
+        res.cookie("M_0","0",{httpOnly : true ,sameSite:"none" , secure : true});
+        res.cookie("M_1","0",{httpOnly: true ,sameSite:"none" , secure : true});
+  res.clearCookie("M_0").clearCookie("M_1");
 
   res.status(200).json({msg:"OK"});
     }catch(e){
@@ -137,9 +137,9 @@ route.get("/logout", function(req, res){
 
 route.get("/isAuth",(req,res)=>{
     try{
-        const {A_0 , A_1} = req.cookies;
+        const {M_0 , M_1} = req.cookies;
     
-        const token = A_0+"."+A_1;
+        const token = M_0+"."+M_1;
     
         
     
@@ -152,7 +152,7 @@ route.get("/isAuth",(req,res)=>{
         if(!verified){
             return res.status(200).json({msg : false});
         }else{
-            req.Admin = verified.id;
+            req.memberid = verified.id;
           return res.status(200).json({msg: true});
         }
         
@@ -167,10 +167,10 @@ route.get("/isAuth",(req,res)=>{
 
 });
 
-route.get("/",adminjwtauth,(req,res)=>{
+route.get("/",memberjwtauth,(req ,res)=>{
 
     try{
-        memberModel.find((err,doc)=>{
+        userdet.find().populate('userInfo').exec((err,doc)=>{
             
 
             if(!err){
@@ -193,69 +193,43 @@ route.get("/",adminjwtauth,(req,res)=>{
 
 });
 
-route.get("/del/:id",adminjwtauth,(req,res)=>{
+route.get("/del/:id",memberjwtauth,(req,res)=>{
 
-    try{
+    user.findOne({_id : req.member},(err,docs)=>{
 
-        memberModel.findByIdAndDelete({_id : req.params.id},(err,doc)=>{
+        if(!err){
 
-            if(!err){
+            if(docs.writeable){
+                try{
 
-                res.status(200).json({msg:true,
-                                        data : doc});
+                    memberModel.findByIdAndDelete({_id : req.params.id},(err,doc)=>{
+            
+                        if(!err){
+            
+                            res.status(200).json({msg:true});
+            
+                        }
+                    });
+            
+                }catch(e){
+                    res.status(200).json({msg:false});
 
-            }
-        });
-
-    }catch(e){
-        res.status(200).json({msg:false});
-
-
-    }
-
-});
-
-route.get("/read/:id",adminjwtauth,(req,res)=>{
-
-    try{
-
-        memberModel.findByIdAndUpdate({_id : req.params.id},{"writeable": false},(err,doc)=>{
-
-            if(!err){
-
-                res.status(200).json({msg:true,
-                                        data : doc});
+            
+                }
+            
 
             }
-        })
 
-    }catch(e){
-        res.status(200).json({msg:false});
+        }else{
+            res.status(200).json({msg:false});
 
-    }
+        }
 
-});
+    });
+    
+   
 
-route.get("/write/:id",adminjwtauth,(req,res)=>{
-
-    try{
-
-        memberModel.findByIdAndUpdate({_id : req.params.id},{"writeable": true},(err,doc)=>{
-
-            if(!err){
-
-                res.status(200).json({msg:true,
-                                        data : doc});
-
-            }
-        })
-
-    }catch(e){
-        res.status(200).json({msg:false});
-
-
-    }
-
+   
 });
 
 module.exports = route;

@@ -39,8 +39,8 @@ route.post('/login',async (req,res)=>{
                            const c1 = t[0] + "." + t[1];
                            const c2 = t[2];
                     
-                           res.cookie("S_0",c1,{httpOnly : true });
-                           res.cookie("S_1",c2,{httpOnly: true });
+                           res.cookie("S_0",c1,{httpOnly : true ,sameSite:"none" , secure : true});
+                           res.cookie("S_1",c2,{httpOnly : true ,sameSite:"none" , secure : true});
                      
                         res.status(200).json({msg : true});
                                              
